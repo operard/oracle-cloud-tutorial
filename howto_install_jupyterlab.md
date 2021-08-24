@@ -177,7 +177,7 @@ firewall-cmd --permanent --zone=public --add-port=8001/tcp
 firewall-cmd --reload
 ```
 
-If you're running directly on a virtual machine and have a browser installed it should take you directly into the jupyter environment. Connect to your "http://<ip>:8001/".
+If you're running directly on a virtual machine and have a browser installed it should take you directly into the jupyter environment. Connect to your "http://xxx.xxx.xxx.xxx:8001/".
   
 And you should see the next Python Web environment "Jupyterlab".
   
