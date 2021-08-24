@@ -1,4 +1,4 @@
-# How to install Jupyterlab in Oracle Cloud (OCI) ?
+# How to deploy Spark Standalone in Oracle Cloud (OCI) ?
 
 The following walk-through guides you through the steps needed to set up your environment to run Spark and Hadoop in Oracle Cloud Infrastructure.
 
