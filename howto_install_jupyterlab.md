@@ -15,15 +15,32 @@ You have deployed a VM 2.1 with Oracle Linux 7.9 (OEL7) in Oracle Cloud Infrastr
 The install is pretty simple. It consists of setting up python, installing python components and libraries. 
 Lets start with setting up the Python Environment
 
-# Install virtualenv
-sudo pip3.6 install virtualenv
-# Create an environment for Redbull HOL
-virtualenv -p /usr/bin/python3 redbullenv
-# Activate the env
-source redbullenv/bin/activate
+### Python Setup
 
-# check list of Python Libraries in your environment
-(redbullenv) [opc@redbull-lab1 ~]$ pip3 list
+By default, OEL7 runs Python 3. The first is to install pip and virtualenv.
+
+#### Install virtualenv
+
+The next step is to install virtualenv. Virtualenv enables us to create isolated sandpits to develop Python applications without running into module or library conflicts. It's very simple to install
+
+```console
+sudo pip3.6 install virtualenv
+```
+
+Next we can create a virtual environment and enable it.
+
+#### Create an environment "myvirtualenv"
+
+```console
+virtualenv -p /usr/bin/python3 myvirtualenv
+# Activate the env
+source myvirtualenv/bin/activate
+```
+
+#### check list of Python Libraries in your environment
+
+```console
+(myvirtualenv) [opc@lab1 ~]$ pip3 list
 Package    Version
 ---------- -------
 pip        21.1.3
@@ -31,20 +48,22 @@ setuptools 57.1.0
 wheel      0.36.2
 WARNING: You are using pip version 21.1.3; however, version 21.2.1 is available.
 You should consider upgrading via the '/home/opc/redbullenv/bin/python -m pip install --upgrade pip' command.
+```
 
+#### Upgrade Environment for this virtual environment
 
-# Install git to connect to github
-sudo yum install git
+```console
+/home/opc/myvirtualenv/bin/python -m pip install --upgrade pip
+```
+### install jupyterlab
 
-# install jupyterlab
+```console
 pip3 install jupyterlab
+```
 
-# Upgrade Environment
-/home/opc/redbullenv/bin/python -m pip install --upgrade pip
+### Install Python Libraries for Machine Learning or ETL Process
 
-
-# Libraries to install
-
+```console
 pip install pandas
 pip install pandarallel
 pip install dask
@@ -62,18 +81,22 @@ pip install scikit-learn
 
 pip install Flask
 pip install gunicorn
+```
 
-# Install extensiones for jupyterlab
+#### Install extensiones for jupyterlab
+
+```console
 pip install jupyter_contrib_nbextensions
 jupyter contrib nbextension install --user
 jupyter nbextension enable execute_time/ExecuteTime
+```
 
-
-# Create script to instantiate automatically  reboot jupyterlab with opc user "launchjupyterlab.sh"
+### Create script to instantiate automatically  reboot jupyterlab with opc user "launchjupyterlab.sh"
   4 -rwxrwxrwx.  1 opc  opc     284 Jul 28 20:21 launchjupyterlab.sh
 
-# Script
+#### Script
 
+```console
 #!/bin/bash
 
 #source /home/oracle/.bashrc
@@ -89,16 +112,24 @@ echo $! > /home/opc/jupyter.pid
 else
 kill $(cat /home/opc/jupyter.pid)
 fi
+```
 
 # connect to root user
+
+```console
 sudo -i
+```
 
 # create script to start, stop service "jupyterlab"
 
- vi /etc/systemd/system/jupyterlab.service
+```console
+vi /etc/systemd/system/jupyterlab.service
+```
+
 
 # Add next lines to launch like "opc" user the script "launchjupyterlab.sh"
 
+```console
 [Unit]
 Description=Service to start jupyterlab for opc
 Documentation=
@@ -111,20 +142,25 @@ ExecStart=/home/opc/launchjupyterlab.sh start
 ExecStop=/home/opc/launchjupyterlab.sh stop
 [Install]
 WantedBy=multi-user.target
+```
 
 # Test Service
 
+```console
 systemctl start jupyterlab
 systemctl status jupyterlab
 systemctl enable jupyterlab
+```
 
 # reboot machine to check that jupyterlab is enabled by default on port 8001
 
 # Open ports to the machine VM2.1
+```console
 firewall-cmd  --permanent --zone=public --list-ports
 firewall-cmd --get-active-zones
 firewall-cmd --permanent --zone=public --add-port=8001/tcp
 firewall-cmd --permanent --zone=public --add-port=8080/tcp
 firewall-cmd --reload
+```
 
 
