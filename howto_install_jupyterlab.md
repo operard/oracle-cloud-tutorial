@@ -37,7 +37,7 @@ virtualenv -p /usr/bin/python3 myvirtualenv
 source myvirtualenv/bin/activate
 ```
 
-#### check list of Python Libraries in your environment
+#### Check list of Python Libraries in your environment
 
 ```console
 (myvirtualenv) [opc@lab1 ~]$ pip3 list
@@ -47,21 +47,21 @@ pip        21.1.3
 setuptools 57.1.0
 wheel      0.36.2
 WARNING: You are using pip version 21.1.3; however, version 21.2.1 is available.
-You should consider upgrading via the '/home/opc/redbullenv/bin/python -m pip install --upgrade pip' command.
+You should consider upgrading via the '/home/opc/myvirtualenv/bin/python -m pip install --upgrade pip' command.
 ```
 
-#### Upgrade Environment for this virtual environment
+#### Upgrade your PIP Environment for this virtual environment
 
 ```console
 /home/opc/myvirtualenv/bin/python -m pip install --upgrade pip
 ```
-### install jupyterlab
+### Jupyterlab Setup
 
 ```console
 pip3 install jupyterlab
 ```
 
-### Install Python Libraries for Machine Learning or ETL Process
+#### Install Python Libraries for Machine Learning or ETL Process
 
 ```console
 pip install pandas
@@ -71,19 +71,22 @@ pip install seaborn
 pip install matplotlib
 pip install plotly
 
-pip install kafka-python (v2.0.0)
-
 pip install -lxml==4.6.3
 pip install selenium
 pip install beautifulsoup4
 
 pip install scikit-learn
+```
 
+#### Install other Python Libraries for Kafka Access and WEB Server Access
+
+```console
+pip install kafka-python (v2.0.0)
 pip install Flask
 pip install gunicorn
 ```
 
-#### Install extensiones for jupyterlab
+#### Install extensiones for Jupyterlab Environment
 
 ```console
 pip install jupyter_contrib_nbextensions
@@ -91,17 +94,24 @@ jupyter contrib nbextension install --user
 jupyter nbextension enable execute_time/ExecuteTime
 ```
 
-### Create script to instantiate automatically  reboot jupyterlab with opc user "launchjupyterlab.sh"
-  4 -rwxrwxrwx.  1 opc  opc     284 Jul 28 20:21 launchjupyterlab.sh
+## Configure Jupyterlab like a OEL7 Linux Service
 
-#### Script
+Create a script to instantiate automatically and reboot jupyterlab with "opc" user.
+
+```console
+vi /home/opc/launchjupyterlab.sh
+```
+
+
+### Script for launchjupyterlab.sh
+
+You must use the virtualenv created and you can launch Jupyterlab in a specific port (for example: 8001) and listen on public IP.
 
 ```console
 #!/bin/bash
 
-#source /home/oracle/.bashrc
-# Activate Redbull Environment
-source redbullenv/bin/activate
+# Activate myvirtualenv Environment
+source myvirtualenv/bin/activate
 
 cd /home/opc
 
@@ -114,20 +124,20 @@ kill $(cat /home/opc/jupyter.pid)
 fi
 ```
 
-# connect to root user
+### connect to "root" user
 
 ```console
 sudo -i
 ```
 
-# create script to start, stop service "jupyterlab"
+### create a script to start, stop service "jupyterlab"
 
 ```console
 vi /etc/systemd/system/jupyterlab.service
 ```
 
 
-# Add next lines to launch like "opc" user the script "launchjupyterlab.sh"
+### Add next lines to launch like "opc" user the script "launchjupyterlab.sh"
 
 ```console
 [Unit]
@@ -144,7 +154,7 @@ ExecStop=/home/opc/launchjupyterlab.sh stop
 WantedBy=multi-user.target
 ```
 
-# Test Service
+### Test Jupyterlab Service
 
 ```console
 systemctl start jupyterlab
@@ -152,14 +162,16 @@ systemctl status jupyterlab
 systemctl enable jupyterlab
 ```
 
-# reboot machine to check that jupyterlab is enabled by default on port 8001
+## Reboot Your machine to final check
 
-# Open ports to the machine VM2.1
+Now, you must reboot your machine to check if jupyterlab script is enabled by default on port defined 8001.
+
+You must open port 8001 to your virtual machine VM 2.1 in order to access using your Public IP.
+
 ```console
 firewall-cmd  --permanent --zone=public --list-ports
 firewall-cmd --get-active-zones
 firewall-cmd --permanent --zone=public --add-port=8001/tcp
-firewall-cmd --permanent --zone=public --add-port=8080/tcp
 firewall-cmd --reload
 ```
 
