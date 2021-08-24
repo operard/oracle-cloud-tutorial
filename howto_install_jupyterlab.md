@@ -1,3 +1,4 @@
-# How to deploy Spark standalone in Oracle Cloud (OCI) ?
+# How to install Jupyterlab in Oracle Cloud (OCI) ?
+
 
 
