@@ -39,6 +39,8 @@ source myvirtualenv/bin/activate
 
 #### Check list of Python Libraries in your environment
 
+Running the following command will show what Python models we have installed at this point.
+
 ```console
 (myvirtualenv) [opc@lab1 ~]$ pip3 list
 Package    Version
@@ -175,4 +177,8 @@ firewall-cmd --permanent --zone=public --add-port=8001/tcp
 firewall-cmd --reload
 ```
 
+If you're running directly on a virtual machine and have a browser installed it should take you directly into the jupyter environment. Connect to your "http://<ip>:8001/".
+  
+And you should see the next Python Web environment "Jupyterlab".
+  
 
