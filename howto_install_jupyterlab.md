@@ -126,13 +126,13 @@ kill $(cat /home/opc/jupyter.pid)
 fi
 ```
 
-### connect to "root" user
+### Connect to "root" user
 
 ```console
 sudo -i
 ```
 
-### create a script to start, stop service "jupyterlab"
+### Create a script to start, stop service "jupyterlab"
 
 ```console
 vi /etc/systemd/system/jupyterlab.service
