@@ -6,133 +6,113 @@ The following walk-through guides you through the steps needed to set up your en
 
 You have deployed a VM 2.1 or + with Oracle Linux 7.9 (OEL7) in Oracle Cloud Infrastructure (OCI).
 
-- The installation of Oracle Linux 7.9 is using pip3.6 by default. 
-- Python 3.6 or higher is installed
+- The installation of Oracle Linux 7.9 is using a JVM by default. 
 - You have access to root either directly or via sudo. By default in OCI, you are connected like "opc" user with sudo privilege.
+
+```console
+[opc@xxx ~]$ java -version
+java version "1.8.0_281"
+Java(TM) SE Runtime Environment (build 1.8.0_281-b09)
+Java HotSpot(TM) 64-Bit Server VM (build 25.281-b09, mixed mode)
+```
 
 ## Java Installation
 
 The install is pretty simple. It consists of setting up Java, installing spark and hadoop components and libraries. 
 Lets start with setting up the Spark & Hadoop Environment.
 
-### Spark and Hadoop Setup
+Download the last version of JDK 1.8 because Hadoop 2.X is using this JAVA version.
 
-
-The next step is to install virtualenv. Virtualenv enables us to create isolated sandpits to develop Python applications without running into module or library conflicts. It's very simple to install
 
 ```console
-sudo pip3.6 install virtualenv
+rpm -ivh /home/opc/jdk-8u271-linux-x64.rpm
 ```
 
-Next we can create a virtual environment and enable it.
-
-#### Check list of Python Libraries in your environment
-
-Running the following command will show what Python models we have installed at this point.
+Check Java Version.
 
 ```console
-(myvirtualenv) [opc@lab1 ~]$ pip3 list
-Package    Version
----------- -------
-pip        21.1.3
-setuptools 57.1.0
-wheel      0.36.2
-WARNING: You are using pip version 21.1.3; however, version 21.2.1 is available.
-You should consider upgrading via the '/home/opc/myvirtualenv/bin/python -m pip install --upgrade pip' command.
+java -version
 ```
 
-#### Upgrade your PIP Environment for this virtual environment
+## Spark and Hadoop Setup
+
+
+The next step is to install Spark and Hadoop Environment. 
+
+First step, choose the version of Spark and Hadoop you want to install. Download the version you want to install
+
+
+### Download Spark 2.4.5 for Hadoop 2.7
 
 ```console
-/home/opc/myvirtualenv/bin/python -m pip install --upgrade pip
-```
-### Jupyterlab Setup
-
-```console
-pip3 install jupyterlab
-```
-
-## Configure Jupyterlab like a OEL7 Linux Service
-
-Create a script to instantiate automatically and reboot jupyterlab with "opc" user.
-
-```console
-vi /home/opc/launchjupyterlab.sh
-```
-
-
-### Script for launchjupyterlab.sh
-
-You must use the virtualenv created and you can launch Jupyterlab in a specific port (for example: 8001) and listen on public IP.
-
-```console
-#!/bin/bash
-
-# Activate myvirtualenv Environment
-source myvirtualenv/bin/activate
-
 cd /home/opc
-
-if [ "$1" = "start" ]
-then
-nohup jupyter-lab --ip=0.0.0.0 --port=8001 > ./nohup.log 2>&1 &
-echo $! > /home/opc/jupyter.pid
-else
-kill $(cat /home/opc/jupyter.pid)
-fi
+wget http://apache.uvigo.es/spark/spark-2.4.5/spark-2.4.5-bin-hadoop2.7.tgz
 ```
 
-### Connect to "root" user
+### Download Spark 2.4.7 for Hadoop 2.7
+```console
+wget http://apache.uvigo.es/spark/spark-2.4.7/spark-2.4.7-bin-hadoop2.7.tgz
+```
+
+### Download Spark 3.1.1 for Hadoop 3.2
+
+```console
+wget http://apache.uvigo.es/spark/spark-3.1.1/spark-3.1.1-bin-hadoop3.2.tgz
+```
+
+### Install the Spark and Hadoop Version
+
+Install the Spark and Hadoop Version choosen in the directory "/opt".
 
 ```console
 sudo -i
+cd /opt
+tar -zxvf /home/opc/spark-2.4.5-bin-hadoop2.7.tgz
+or 
+tar -zxvf /home/opc/spark-2.4.7-bin-hadoop2.7.tgz
+or
+tar -zxvf /home/opc/spark-3.1.1-bin-hadoop3.2.tgz
 ```
 
-### Create a script to start, stop service "jupyterlab"
+## Install PYSPARK in PYTHON3 evnironment
 
 ```console
-vi /etc/systemd/system/jupyterlab.service
+/opt/Python-3.7.6/bin/pip3 install 'pyspark=2.4.7'
+/opt/Python-3.7.6/bin/pip3 install findspark
 ```
 
 
-### Add next lines to launch like "opc" user the script "launchjupyterlab.sh"
+Next we can create a virtual environment and enable it.
+
+
+### Modify your environment to use this Spark and Hadoop Version
+
+Add to ".bashrc" for the user "opc" the next lines
+
 
 ```console
-[Unit]
-Description=Service to start jupyterlab for opc
-Documentation=
-[Service]
-User=opc
-Group=opc
-Type=forking
-WorkingDirectory=/home/opc
-ExecStart=/home/opc/launchjupyterlab.sh start
-ExecStop=/home/opc/launchjupyterlab.sh stop
-[Install]
-WantedBy=multi-user.target
+# Add by %OP%
+export PYTHONHOME=/opt/anaconda3
+export PATH=$PYTHONHOME/bin:$PYTHONHOME/condabin:$PATH
+
+# SPARK ENV
+#export JAVA_HOME=$(/usr/libexec/java_home)
+export SPARK_HOME=/opt/spark-2.4.5-bin-hadoop2.7
+export PATH=$SPARK_HOME/bin:$PATH
+export PYSPARK_PYTHON=python3
+
+export PYSPARK_DRIVER_PYTHON=jupyter
+export PYSPARK_DRIVER_PYTHON_OPTS='notebook'
 ```
 
-### Test Jupyterlab Service
 
-```console
-systemctl start jupyterlab
-systemctl status jupyterlab
-systemctl enable jupyterlab
-```
+## Test your Spark and Hadoop Environment
 
-## Reboot Your machine to final check
-
-Now, you must reboot your machine to check if jupyterlab script is enabled by default on port defined 8001.
-
-You must open port 8001 to your virtual machine VM 2.1 in order to access using your Public IP.
-
-```console
-firewall-cmd  --permanent --zone=public --list-ports
-firewall-cmd --get-active-zones
-firewall-cmd --permanent --zone=public --add-port=8001/tcp
-firewall-cmd --reload
-```
 
 If you're running directly on a virtual machine and have a browser installed it should take you directly into the jupyter environment. Connect to your "http://xxx.xxx.xxx.xxx:8001/".
   
-And you should see the next Python Web environment "Jupyterlab".
+And upload the next notebooks:
+
+- [Notebook test findspark]().
+- [Notebook test Pyspark]().
+
