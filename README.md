@@ -4,8 +4,7 @@ Oracle Cloud (OCI) Tutorials for Developers.
 
 ## Howtos
 
-How to install Jupyterlab in Oracle Cloud (OCI) ?
+[How to install Jupyterlab in Oracle Cloud (OCI)?](https://github.com/operard/wiki/Installation-Guide).
 
-How to deploy Spark standalone in Oracle Cloud (OCI) ?
-
+[How to deploy Spark standalone in Oracle Cloud (OCI)?](https://github.com/operard/wiki/Installation-Guide).
 
