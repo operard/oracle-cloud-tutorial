@@ -1,6 +1,6 @@
-# How to install Jupyterlab in Oracle Cloud (OCI) ?
+# How to deploy Cassandra in Oracle Cloud (OCI) Linux VM for Developers?
 
-The following walk-through guides you through the steps needed to set up your environment to run Jupyterlab in Oracle Cloud Infrastructure.
+The following walk-through guides you through the steps needed to set up your environment to run Cassandra in Oracle Cloud Infrastructure.
 
 ## Prerequisites
 
