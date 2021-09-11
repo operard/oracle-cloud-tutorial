@@ -1,6 +1,6 @@
-# How to install Jupyterlab in Oracle Cloud (OCI) ?
+# How to deploy the community Feature Store HopsWorks (LogicalClocks) on Oracle Cloud (OCI)?
 
-The following walk-through guides you through the steps needed to set up your environment to run Jupyterlab in Oracle Cloud Infrastructure.
+The following walk-through guides you through the steps needed to set up your environment to run HopsWorks in Oracle Cloud Infrastructure.
 
 ## Prerequisites
 
