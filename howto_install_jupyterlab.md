@@ -126,6 +126,13 @@ kill $(cat /home/opc/jupyter.pid)
 fi
 ```
 
+We must put the script in executable mode in order to be executed from jupyterlab service.
+
+```console
+chmod 777 /home/opc/launchjupyterlab.sh
+```
+
+
 ### Connect to "root" user
 
 ```console
