@@ -1,6 +1,6 @@
-# How to install Jupyterlab in Oracle Cloud (OCI) ?
+# How to deploy MongoDB in Oracle Cloud (OCI) Linux VM for Developers?
 
-The following walk-through guides you through the steps needed to set up your environment to run Jupyterlab in Oracle Cloud Infrastructure.
+The following walk-through guides you through the steps needed to set up your environment to run MongoDB in Oracle Cloud Infrastructure.
 
 ## Prerequisites
 
