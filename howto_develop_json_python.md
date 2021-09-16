@@ -11,4 +11,8 @@ It requires only a few components installed in your environment.
 - A valid wallet for an ATP, ADW or ADJ service
 Let's go through each of these in turn
 
+# To use SODA API from Python
+
+Check the next link [here](https://docs.oracle.com/en/database/oracle/simple-oracle-document-access/python/)
+
 
