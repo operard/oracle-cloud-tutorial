@@ -1,10 +1,19 @@
-# How to deploy Spark Standalone in Oracle Cloud (OCI) ?
+# How to deploy Spark in Oracle Cloud Kubernetes (OKE) ?
 
-The following walk-through guides you through the steps needed to set up your environment to run Spark and Hadoop in Oracle Cloud Infrastructure.
+The following walk-through guides you through the steps needed to set up your environment to run Spark in Kubernetes in Oracle Cloud Infrastructure.
 
-## Prerequisites
+## Deploy Kubernetes Cluster
 
-You have deployed a VM 2.1 or + with Oracle Linux 7.9 (OEL7) in Oracle Cloud Infrastructure (OCI).
+Connect to Oracle Cloud Console to deploy a K8s Cluster.
+
+
+
+
+## Install Kubectl
+
+You must deploy kubectl to connect to OKE Cluster.
+
+You can check the documentation [here](https://kubernetes.io/docs/tasks/tools/)
 
 - The installation of Oracle Linux 7.9 is using a JVM by default. 
 - You have access to root either directly or via sudo. By default in OCI, you are connected like "opc" user with sudo privilege.
