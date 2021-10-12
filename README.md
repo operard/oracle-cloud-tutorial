@@ -28,3 +28,6 @@ Oracle Cloud (OCI) Tutorials for Developers.
 
 [How to deploy the open-source Feature Store Feast on Oracle Cloud?](https://github.com/operard/oracle-cloud-tutorial/blob/main/howto_deploy_feast.md).
 
+### Microservices & OKE
+
+[How to deploy Spark in OKE?](https://github.com/operard/oracle-cloud-tutorial/blob/main/howto_deploy_spark_oke.md).
