@@ -72,6 +72,8 @@ or
 tar -zxvf /home/opc/spark-2.4.7-bin-hadoop2.7.tgz
 or
 tar -zxvf /home/opc/spark-3.1.1-bin-hadoop3.2.tgz
+or
+tar -zxvf /home/opc/spark-3.1.2-bin-hadoop3.2.tgz
 ```
 
 ## Install PYSPARK in PYTHON3 evnironment
@@ -115,4 +117,4 @@ And upload the next notebooks:
 
 - [Notebook test findspark](https://github.com/operard/oracle-cloud-tutorial/blob/main/notebooks/Test%20PySpark.ipynb).
 - [Notebook test Pyspark](https://github.com/operard/oracle-cloud-tutorial/blob/main/notebooks/Test%20PySpark.ipynb).
-
+- [Notebook test Pyspark With MySQL](https://github.com/operard/oracle-cloud-tutorial/blob/main/notebooks/Test_PySpark_Mysql.ipynb).
