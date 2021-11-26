@@ -1,6 +1,6 @@
 # How to deploy MongoDB in Oracle Cloud (OCI) Linux VM for Developers?
 
-The following walk-through guides you through the steps needed to set up your environment to run MongoDB in Oracle Cloud Infrastructure.
+The following walk-through guides you through the steps needed to set up your environment to run MongoDB Enterprise or Community in Oracle Cloud Infrastructure.
 
 ## Prerequisites
 
@@ -10,181 +10,169 @@ You have deployed a VM 2.1 with Oracle Linux 7.9 (OEL7) in Oracle Cloud Infrastr
 - Python 3.6 or higher is installed
 - You have access to root either directly or via sudo. By default in OCI, you are connected like "opc" user with sudo privilege.
 
-## Jupyterlab Installation
+## MongoDB Installation
 
-The install is pretty simple. It consists of setting up python, installing python components and libraries. 
-Lets start with setting up the Python Environment
-
-### Python Setup
-
-By default, OEL7 runs Python 3. The first is to install pip and virtualenv.
-
-#### Install virtualenv
-
-The next step is to install virtualenv. Virtualenv enables us to create isolated sandpits to develop Python applications without running into module or library conflicts. It's very simple to install
+Create an "/etc/yum.repos.d/mongodb-enterprise-5.0.repo" file in the yum configuration so that you can install MongoDB enterprise directly using the next lines:
 
 ```console
-sudo pip3.6 install virtualenv
+vi /etc/yum.repos.d/mongodb-enterprise-5.0.repo
 ```
 
-Next we can create a virtual environment and enable it.
-
-#### Create an environment "myvirtualenv"
+Paste the next lines in this file:
 
 ```console
-virtualenv -p /usr/bin/python3 myvirtualenv
-# Activate the env
-source myvirtualenv/bin/activate
+[mongodb-enterprise-5.0]
+name=MongoDB Enterprise Repository
+baseurl=https://repo.mongodb.com/yum/redhat/$releasever/mongodb-enterprise/5.0/$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://www.mongodb.org/static/pgp/server-5.0.asc
 ```
-
-#### Check list of Python Libraries in your environment
-
-Running the following command will show what Python models we have installed at this point.
+Execute the next command using yum file:
 
 ```console
-(myvirtualenv) [opc@lab1 ~]$ pip3 list
-Package    Version
----------- -------
-pip        21.1.3
-setuptools 57.1.0
-wheel      0.36.2
-WARNING: You are using pip version 21.1.3; however, version 21.2.1 is available.
-You should consider upgrading via the '/home/opc/myvirtualenv/bin/python -m pip install --upgrade pip' command.
+sudo yum install -y mongodb-enterprise
 ```
-
-#### Upgrade your PIP Environment for this virtual environment
+The result obtained at the end of the installation should be like this:
 
 ```console
-/home/opc/myvirtualenv/bin/python -m pip install --upgrade pip
+Installed:
+  mongodb-enterprise.x86_64 0:5.0.2-1.el7
+
+Dependency Installed:
+  cyrus-sasl.x86_64 0:2.1.26-23.el7                                    cyrus-sasl-gssapi.x86_64 0:2.1.26-23.el7
+  mongodb-database-tools.x86_64 0:100.5.0-1                            mongodb-enterprise-cryptd.x86_64 0:5.0.2-1.el7
+  mongodb-enterprise-database.x86_64 0:5.0.2-1.el7                     mongodb-enterprise-database-tools-extra.x86_64 0:5.0.2-1.el7
+  mongodb-enterprise-mongos.x86_64 0:5.0.2-1.el7                       mongodb-enterprise-server.x86_64 0:5.0.2-1.el7
+  mongodb-enterprise-shell.x86_64 0:5.0.2-1.el7                        mongodb-enterprise-tools.x86_64 0:5.0.2-1.el7
+  mongodb-mongosh.x86_64 0:1.0.5-1.el7                                 net-snmp.x86_64 1:5.7.2-49.el7_9.1
+  net-snmp-agent-libs.x86_64 1:5.7.2-49.el7_9.1                        net-snmp-libs.x86_64 1:5.7.2-49.el7_9.1
+
+Complete!
 ```
-### Jupyterlab Setup
+
+The install is pretty simple using the yum installation script.
+Lets start with setting up the MongoDB Environment
+
+### MongoDB Setup
+
+By default, MongoDB has a daemon configuration file in "/etc/mongod.conf".
+
+By default, MongoDB runs using the mongod user account and uses the following default directories:
+
+- /var/lib/mongo (the data directory)
+- /var/log/mongodb (the log directory)
+
+The package manager creates the default directories during installation. The owner and group name are <b>mongod</b>.
+
+#### MongoDB to use Non-Default Directories
+
+To use a data directory and/or log directory other than the default directories:
+
+Create the new directory or directories.
+Edit the configuration file /etc/mongod.conf and modify the following fields accordingly:
 
 ```console
-pip3 install jupyterlab
-```
+storage.dbPath to specify a new data directory path (e.g. /some/data/directory)
+systemLog.path to specify a new log file path (e.g. /some/log/directory/mongod.log)
+Ensure that the user running MongoDB has access to the directory or directories:
 
-#### Install Python Libraries for Machine Learning or ETL Process
+sudo chown -R mongod:mongod <directory>
+```
+For example, Create a "data" directory:
 
 ```console
-pip install pandas
-pip install pandarallel
-pip install dask
-pip install seaborn
-pip install matplotlib
-pip install plotly
+sudo mkdir /data/mongodb 
 
-pip install -lxml==4.6.3
-pip install selenium
-pip install beautifulsoup4
-
-pip install scikit-learn
+sudo chown -R mongod:mongod /data/mongodb
 ```
 
-#### Install other Python Libraries for Kafka Access and WEB Server Access
+Change the configuration in "/etc/mongod.conf" and the "dbPath" variable.
 
 ```console
-pip install kafka-python (v2.0.0)
-pip install Flask
-pip install gunicorn
+vi /etc/mongod.conf
+
+# Where and how to store data.
+storage:
+#  dbPath: /var/lib/mongo
+  dbPath: /data/mongodb
+  journal:
+    enabled: true
+#  engine:
+#  wiredTiger:
 ```
 
-#### Install extensiones for Jupyterlab Environment
+If you change the user that runs the MongoDB process, you must give the new user access to these directories.
+
+#### MongoDB SELinux Configuration (Optional)
+
+Configure SELinux if enforced. See [SELinux](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-red-hat/#std-label-install-rhel-configure-selinux)
+
+### Start MongoDB
+
+You can start the mongod process by issuing the following command:
 
 ```console
-pip install jupyter_contrib_nbextensions
-jupyter contrib nbextension install --user
-jupyter nbextension enable execute_time/ExecuteTime
+sudo systemctl start mongod
 ```
 
-## Configure Jupyterlab like a OEL7 Linux Service
+### Verify that MongoDB has started successfully
 
-Create a script to instantiate automatically and reboot jupyterlab with "opc" user.
+You can verify that the mongod process has started successfully by issuing the following command:
 
 ```console
-vi /home/opc/launchjupyterlab.sh
+sudo systemctl status mongod
 ```
 
-
-### Script for launchjupyterlab.sh
-
-You must use the virtualenv created and you can launch Jupyterlab in a specific port (for example: 8001) and listen on public IP.
+You can optionally ensure that MongoDB will start following a system reboot by issuing the following command:
 
 ```console
-#!/bin/bash
-
-# Activate myvirtualenv Environment
-source myvirtualenv/bin/activate
-
-cd /home/opc
-
-if [ "$1" = "start" ]
-then
-nohup jupyter-lab --ip=0.0.0.0 --port=8001 > ./nohup.log 2>&1 &
-echo $! > /home/opc/jupyter.pid
-else
-kill $(cat /home/opc/jupyter.pid)
-fi
+sudo systemctl enable mongod
 ```
-
-We must put the script in executable mode in order to be executed from jupyterlab service.
+### Stop MongoDB
+As needed, you can stop the mongod process by issuing the following command:
 
 ```console
-chmod 777 /home/opc/launchjupyterlab.sh
+sudo systemctl stop mongod
 ```
 
-
-### Connect to "root" user
+### Restart MongoDB.
+You can restart the mongod process by issuing the following command:
 
 ```console
-sudo -i
+sudo systemctl restart mongod
 ```
 
-### Create a script to start, stop service "jupyterlab"
+You can follow the state of the process for errors or important messages by watching the output in the /var/log/mongodb/mongod.log file.
+
+## Begin using MongoDB
+
+Start a mongosh session on the same host machine as the mongod. You can run mongosh without any command-line options to connect to a mongod that is running on your localhost with default port 27017.
+
 
 ```console
-vi /etc/systemd/system/jupyterlab.service
+mongosh
 ```
 
-
-### Add next lines to launch like "opc" user the script "launchjupyterlab.sh"
+The result should be:
 
 ```console
-[Unit]
-Description=Service to start jupyterlab for opc
-Documentation=
-[Service]
-User=opc
-Group=opc
-Type=forking
-WorkingDirectory=/home/opc
-ExecStart=/home/opc/launchjupyterlab.sh start
-ExecStop=/home/opc/launchjupyterlab.sh stop
-[Install]
-WantedBy=multi-user.target
+Current Mongosh Log ID: 61a0e720ab709eb9973092bc
+Connecting to:          mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000
+Using MongoDB:          5.0.2
+Using Mongosh:          1.0.5
+
+For mongosh info see: https://docs.mongodb.com/mongodb-shell/
+
+------
+   The server generated these startup warnings when booting:
+   2021-11-26T13:54:31.358+00:00: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+   2021-11-26T13:54:31.358+00:00: /sys/kernel/mm/transparent_hugepage/enabled is 'always'. We suggest setting it to 'never'
+------
+
+Enterprise test>
 ```
 
-### Test Jupyterlab Service
+Now you are connected to Mongodb on Oracle Cloud Infrastructure !!!
 
-```console
-systemctl start jupyterlab
-systemctl status jupyterlab
-systemctl enable jupyterlab
-```
 
-## Reboot Your machine to final check
-
-Now, you must reboot your machine to check if jupyterlab script is enabled by default on port defined 8001.
-
-You must open port 8001 to your virtual machine VM 2.1 in order to access using your Public IP.
-
-```console
-firewall-cmd  --permanent --zone=public --list-ports
-firewall-cmd --get-active-zones
-firewall-cmd --permanent --zone=public --add-port=8001/tcp
-firewall-cmd --reload
-```
-
-If you're running directly on a virtual machine and have a browser installed it should take you directly into the jupyter environment. Connect to your "http://xxx.xxx.xxx.xxx:8001/".
-  
-And you should see the next Python Web environment "Jupyterlab".
-  
